@@ -6,9 +6,8 @@ import requests
 import sys
 import datetime
 
-SERVER = 'http://127.0.0.1:5000'
-#SERVER = 'http://192.168.1.254:2000'
-#SERVER = 'http://192.168.1.103:80'
+#SERVER = 'http://127.0.0.1:5000'
+SERVER = 'http://192.168.1.140:80'
 
 http.client.HTTPConnection.debuglevel = 1
 
@@ -20,7 +19,9 @@ requests_log.propagate = True
 
 session = requests.Session()
 
-while(True):
+while (True):
+	r = session.get(SERVER)
+	time.sleep(2)
 
 	sensor1_payload = {
 		'sensorID':'sensor1',
@@ -30,31 +31,31 @@ while(True):
 		'quatReal':'6',
 		'timestamp':str(datetime.datetime.now().time())
 	}
-	
+
 	#update server with the above payload
 	r = session.post(SERVER + "/sensor1", json=sensor1_payload)
 	time.sleep(2)
-	
+
 	#query server-should see the above payload printed back out
 	r = session.get(SERVER + "/sensor1")
 	data = json.loads(r.text)
 	print(data)
 	time.sleep(2)
-	
-	
+
+
 	sensor2_payload = {
 		'sensorID':'sensor2',
 		'quatI':'1',
 		'quatJ':'2',
 		'quatK':'3',
 		'quatReal':'6',
-		'timestamp':datetime.datetime.now().time()
+		'timestamp':str(datetime.datetime.now().time())
 	}
-	
+
 	#update server with the above payload
 	r = session.post(SERVER + "/sensor2", json=sensor2_payload)
 	time.sleep(2)
-	
+
 	#query server-should see the above payload printed back out
 	r = session.get(SERVER + "/sensor2")
 	data = json.loads(r.text)
