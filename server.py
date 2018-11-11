@@ -13,9 +13,9 @@ app = Flask(__name__)
 client = MongoClient()
 
 #create database, but database not actually created until something inserted into items
-db = client.database
+dbase = client.database
 
-entries = db.entries
+entries = dbase.entries
 
 #simple route to ensure that we can get connection between arduino and server
 @app.route("/", methods=['GET'])
@@ -31,8 +31,9 @@ def hello():
 @app.route('/sensor1', methods=['POST','GET'])
 def sensor1():
 	if request.method == 'POST':
+                print(request.json.get('sensorID'))
 		entries.update_one({'sensorID':'sensor1'},
-		{"$set": {'sensorID':request.json.get('sensor1'),
+		{"$set": {'sensorID':request.json.get('sensorID'),
 		'quatI':request.json.get('quatI'),
 		'quatJ':request.json.get('quatJ'),
 		'quatK':request.json.get('quatK'),
@@ -42,6 +43,7 @@ def sensor1():
 		return 'Data updated', 200
 	elif request.method == 'GET':
 		entry = entries.find_one({'sensorID':'sensor1'})
+		print(entry)
 		result = {'sensorID':entry['sensorID'],'quatI':entry['quatI'],'quatJ':entry['quatJ'],
 		'quatK':entry['quatK'],'quatReal':entry['quatReal'],'timestamp':entry['timestamp']}
 		resp = make_response(jsonify(result), 200)
@@ -53,17 +55,20 @@ def sensor1():
 @app.route('/sensor2', methods=['POST','GET'])
 def sensor2():
 	if request.method == 'POST':
+                print(request.json.get('sensorID'))
 		entries.update_one({'sensorID':'sensor2'},
-		{"$set": {'sensorID':request.json.get('sensor2'),
+		{"$set": {'sensorID':request.json.get('sensorID'),
 		'quatI':request.json.get('quatI'),
 		'quatJ':request.json.get('quatJ'),
 		'quatK':request.json.get('quatK'),
 		'quatReal':request.json.get('quatReal'),
 		'timestamp':str(datetime.datetime.now().time())}},
 		upsert=True)
+		print(str(datetime.datetime.now().time()))
 		return 'Data updated', 200
 	elif request.method == 'GET':
 		entry = entries.find_one({'sensorID':'sensor2'})
+		print(entry)
 		result = {'sensorID':entry['sensorID'],'quatI':entry['quatI'],'quatJ':entry['quatJ'],
 		'quatK':entry['quatK'],'quatReal':entry['quatReal'],'timestamp':entry['timestamp']}
 		resp = make_response(jsonify(result), 200)
