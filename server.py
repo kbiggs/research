@@ -5,6 +5,7 @@ import datetime
 
 from flask import Flask, request, jsonify, abort, make_response
 from pymongo import MongoClient
+import csv
 
 #create an instance of Flask (this is actually what is running the summer)
 app = Flask(__name__)
@@ -17,11 +18,31 @@ dbase = client.database
 
 entries = dbase.entries
 
+filenames = ['sensorID', 'quatI', 'quatJ', 'quatK', 'quatReal', 'timestamp']
+file = open('data.csv', 'w')
+
+with file:
+    writer = csv.DictWriter(file, fieldnames=filenames)
+    writer.writeheader()
+    
+def writeToCSV(sensorID, quatI, quatJ, quatK, quatReal, timestamp):
+    file = open('data.csv', 'a')
+    with file:
+        writer = csv.DictWriter(file, fieldnames=filenames)
+        writer.writerow({'sensorID':sensorID,
+            'quatI':quatI,
+            'quatJ':quatJ,
+            'quatK':quatK,
+            'quatReal':quatReal,
+            'timestamp':timestamp})
+
 #simple route to ensure that we can get connection between arduino and server
-@app.route("/", methods=['GET'])
+@app.route("/", methods=['POST','GET'])
 def hello():
     if request.method == 'GET':
         print('Hello there')
+    elif request.method == 'POST':
+        print('Hello from post')
     else:
         print('Hello from no request')
     return "Hello There!", 200
@@ -40,6 +61,7 @@ def sensor1():
 		'quatReal':request.json.get('quatReal'),
 		'timestamp':str(datetime.datetime.now().time())}},
 		upsert=True)
+		writeToCSV('sensor1',request.json.get('quatI'),request.json.get('quatJ'),request.json.get('quatK'),request.json.get('quatReal'),str(datetime.datetime.now().time()))
 		return 'Data updated', 200
 	elif request.method == 'GET':
 		entry = entries.find_one({'sensorID':'sensor1'})
@@ -64,7 +86,8 @@ def sensor2():
 		'quatReal':request.json.get('quatReal'),
 		'timestamp':str(datetime.datetime.now().time())}},
 		upsert=True)
-		print(str(datetime.datetime.now().time()))
+		writeToCSV('sensor2',request.json.get('quatI'),request.json.get('quatJ'),request.json.get('quatK'),request.json.get('quatReal'),str(datetime.datetime.now().time()))
+		#print(str(datetime.datetime.now().time()))
 		return 'Data updated', 200
 	elif request.method == 'GET':
 		entry = entries.find_one({'sensorID':'sensor2'})
