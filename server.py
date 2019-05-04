@@ -2,6 +2,7 @@ import json
 import pymongo
 import requests
 import datetime
+from datetime import timedelta
 
 from flask import Flask, request, jsonify, abort, make_response
 from pymongo import MongoClient
@@ -17,6 +18,8 @@ client = MongoClient()
 dbase = client.database
 
 entries = dbase.entries
+
+timestamp = datetime.datetime.now().time()
 
 filenames = ['sensorID', 'quatI', 'quatJ', 'quatK', 'quatReal', 'timestamp']
 file = open('data.csv', 'w')
@@ -51,8 +54,21 @@ def hello():
 #route for sensor 1 data
 @app.route('/sensor1', methods=['POST','GET'])
 def sensor1():
+        global timestamp
 	if request.method == 'POST':
+                #print(datetime.datetime.now().time())
+                print(str(datetime.datetime.now().time()))
+                timestamp = datetime.datetime.now().time()
+                newTime = datetime.datetime(2019, 4, 11, timestamp.hour, timestamp.minute, timestamp.second, timestamp.microsecond)
+                '''print('K: ', request.json.get('quatK'))
+                print('I: ', request.json.get('quatI'))
+                print('J: ', request.json.get('quatJ'))
+                print('R: ', request.json.get('quatReal'))'''
                 print(request.json.get('sensorID'))
+                splitK = request.json.get('quatK').split(",")
+                splitI = request.json.get('quatI').split(",")
+                splitJ = request.json.get('quatJ').split(",")
+                splitR = request.json.get('quatReal').split(",")
 		entries.update_one({'sensorID':'sensor1'},
 		{"$set": {'sensorID':request.json.get('sensorID'),
 		'quatI':request.json.get('quatI'),
@@ -61,7 +77,10 @@ def sensor1():
 		'quatReal':request.json.get('quatReal'),
 		'timestamp':str(datetime.datetime.now().time())}},
 		upsert=True)
-		writeToCSV('sensor1',request.json.get('quatI'),request.json.get('quatJ'),request.json.get('quatK'),request.json.get('quatReal'),str(datetime.datetime.now().time()))
+		for i in range(len(splitK)):
+                    incTime = newTime + timedelta(microseconds=50000)
+                    writeToCSV('sensor1',splitI[i],splitJ[i],splitK[i],splitR[i],str(incTime.time()))
+                    newTime = datetime.datetime(2019, 4, 11, incTime.hour, incTime.minute, incTime.second, incTime.microsecond)
 		return 'Data updated', 200
 	elif request.method == 'GET':
 		entry = entries.find_one({'sensorID':'sensor1'})
@@ -71,13 +90,26 @@ def sensor1():
 		resp = make_response(jsonify(result), 200)
 		return resp
 	else:
+		print('in else')
 		return 'Bad request', 400
 
 #route for sensor 2 data
 @app.route('/sensor2', methods=['POST','GET'])
 def sensor2():
+        global timestamp
 	if request.method == 'POST':
+                #print(datetime.datetime.now().time())
+                print(str(datetime.datetime.now().time()))
+                newTime = datetime.datetime(2019, 4, 11, timestamp.hour, timestamp.minute, timestamp.second, timestamp.microsecond)
+                '''print('K: ', request.json.get('quatK'))
+                print('I: ', request.json.get('quatI'))
+                print('J: ', request.json.get('quatJ'))
+                print('R: ', request.json.get('quatReal'))'''
                 print(request.json.get('sensorID'))
+                splitK = request.json.get('quatK').split(",")
+                splitI = request.json.get('quatI').split(",")
+                splitJ = request.json.get('quatJ').split(",")
+                splitR = request.json.get('quatReal').split(",")
 		entries.update_one({'sensorID':'sensor2'},
 		{"$set": {'sensorID':request.json.get('sensorID'),
 		'quatI':request.json.get('quatI'),
@@ -86,8 +118,10 @@ def sensor2():
 		'quatReal':request.json.get('quatReal'),
 		'timestamp':str(datetime.datetime.now().time())}},
 		upsert=True)
-		writeToCSV('sensor2',request.json.get('quatI'),request.json.get('quatJ'),request.json.get('quatK'),request.json.get('quatReal'),str(datetime.datetime.now().time()))
-		#print(str(datetime.datetime.now().time()))
+		for i in range(len(splitK)):
+                    incTime = newTime + timedelta(microseconds=50000)
+                    writeToCSV('sensor2',splitI[i],splitJ[i],splitK[i],splitR[i],str(incTime.time()))
+                    newTime = datetime.datetime(2019, 4, 11, incTime.hour, incTime.minute, incTime.second, incTime.microsecond)
 		return 'Data updated', 200
 	elif request.method == 'GET':
 		entry = entries.find_one({'sensorID':'sensor2'})
