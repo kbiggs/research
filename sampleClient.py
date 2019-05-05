@@ -7,7 +7,7 @@ import sys
 import datetime
 
 #SERVER = 'http://127.0.0.1:5000'
-SERVER = 'http://192.168.1.140:80'
+SERVER = 'http://192.168.137.227:80'
 
 http.client.HTTPConnection.debuglevel = 1
 
@@ -25,11 +25,11 @@ while (True):
 
 	sensor1_payload = {
 		'sensorID':'sensor1',
-		'quatI':'1',
-		'quatJ':'2',
-		'quatK':'3',
-		'quatReal':'6',
-		'timestamp':str(datetime.datetime.now().time())
+		'quatI':'3.14,3.14,3.14,3.14,3.14,3.14,3.14,3.14,3.14,3.14',
+		'quatJ':'3.14,3.14,3.14,3.14,3.14,3.14,3.14,3.14,3.14,3.14',
+		'quatK':'3.14,3.14,3.14,3.14,3.14,3.14,3.14,3.14,3.14,3.14',
+		'quatReal':'3.14,3.14,3.14,3.14,3.14,3.14,3.14,3.14,3.14,3.14',
+		'timestamp':'15:47:54.584114'
 	}
 
 	#update server with the above payload
@@ -49,7 +49,7 @@ while (True):
 		'quatJ':'2',
 		'quatK':'3',
 		'quatReal':'6',
-		'timestamp':str(datetime.datetime.now().time())
+		'timestamp':'15:47:54.584114'
 	}
 
 	#update server with the above payload
